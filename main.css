@@ -1,0 +1,82 @@
+body{
+    background: white;
+    font-family: "Microsoft PhagsPa", serif;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+h1{
+    color: black;
+    background: white;
+    text-align: center;
+}
+h2{
+    color: black;
+    text-align: left;
+    display: inline;
+}
+h3{
+    color: white;
+    background: black;
+    text-align: right;
+    display: inline;
+    float: right;
+}
+header{
+    text-align: left;
+}
+div{
+    display: block;
+    color: white;
+    text-align: center;
+}
+circle{
+    stroke:"black";
+    stroke-width:"3";
+    fill:"Ivory";
+}
+footer{
+    color: black;
+}
+.Bodytitle{
+    font-size: 250%;
+    text-align: center;
+    margin: 0px;
+}
+p{
+    background: darkgrey;
+    color: #222222;
+    padding: 5px;
+    text-align: center;
+}
+.Horiz_Div {
+    float: left;
+    margin-right: 5px;
+}
+.GeneralDiv{
+    text-align: center;
+    width: auto;
+    display: inline-block;
+}
+*{
+    box-sizing: border-box;
+}
+/* Create two unequal columns that floats next to each other */
+.column {
+    float:left;
+    padding: 10px;
+    height: 500px;  /* Should be removed. Only for demonstration */
+    text-align: center;
+}
+.left {
+    width: 25%;
+}
+.right {
+    width: 75%;
+}
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}

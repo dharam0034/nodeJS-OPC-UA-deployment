@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<hr>
+<head>
+    <title> FIS A2 </title>
+    <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+    <script src="javascript/jquery.min.js"></script>
+    <link href="main.css" rel="stylesheet" type="text/css" />
+    <script src='/socket.io/socket.io.js'></script>
+    <script src="javascript/Chart.bundle.js"></script>
+    <script src="javascript/utils.js"></script>
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        .chart-container {
+            width: 500px;
+            margin-left: 40px;
+            margin-right: 40px;
+            margin-bottom: 40px;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1><b> ASE-9476 Factory Information Systems </b></h1>
+        <h2 style="color:black"><em> Assignment 2 </em></h2>
+        <h3> Tampere University of Technology </h3>
+    </header> <br>
+    <div>
+        <h1> Tank Controller </h1>
+        <h2> Node-OPC-UA Implementation </h2>
+    </div>
+
+
+    <script>
+        var config = {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Tank Level',
+                    backgroundColor: window.chartColors.red,
+                    borderColor: window.chartColors.red,
+                    data: [ ],
+                    fill: false
+                }, {
+                    label: 'Valve Position',
+                    fill: false,
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: [ ]
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Dynamic Historic Data'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time Stamp (UTC+3)'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value (%)'
+                        }
+                    }]
+                }
+            }
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myLine = new Chart(ctx, config);
+        };
+
+        var socket = io.connect('http://localhost:3700');
+        socket.on("connect", function() {
+            //socket.emit("some event", {some: "data"});
+        });
+        socket.on("event", function(data1) {
+            var TS = new Date();
+            var year = TS.getUTCFullYear();
+            var month = ((TS.getUTCMonth()+1)<10?'0':'') + (TS.getUTCMonth()+1);
+            var day = ((TS.getUTCDay()+8)<10?'0':'') + (TS.getUTCDay()+8);
+            var hour = ((TS.getUTCMinutes()+3)<10?'0':'') + (TS.getUTCMinutes()+3);
+            var minutes = (TS.getUTCMinutes()<10?'0':'') + TS.getUTCMinutes();
+            var seconds =  (TS.getUTCSeconds()<10?'0':'') + TS.getUTCSeconds();
+        var CTS = year + "/" + month + "/" + day + " " + hour + ":" + minutes+":"+ seconds;
+            var WL = (10*data1.waterL).toFixed(2);
+            var VL = (100*data1.ValveL).toFixed(2);
+            document.getElementById('waterLevel').innerHTML = WL.toString() + " %";
+            document.getElementById('valvePosition').innerHTML = VL.toString() + " %";
+            if (config.data.datasets.length > 0) {
+                //var month = MONTHS[config.data.labels.length % MONTHS.length];
+                config.data.labels.push(CTS);
+                config.data.datasets[0].data.push(WL);
+                config.data.datasets[1].data.push(VL);
+                window.myLine.update();
+            }
+        });
+    </script>
+
+    <div>
+        <div class="column left" style="background-color:#aaa;">
+            <h2>Current Data</h2><br>
+                <div class="GeneralDiv">
+                    <div class="Horiz_Div">
+                        <p> Water Level  </p>
+                        <div id="waterLevel">0</div>
+                    </div>
+                     <div class="Horiz_Div">
+                        <p> Valve Position </p>
+                        <div id="valvePosition">1.0</div>
+                     </div>
+                </div>
+        </div>
+        <div class="column right" style="background-color:silver;">
+            <h2>Variable Monitoring</h2><br>
+            <div style="width:80%;text-align: center;">
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <footer>
+        Developed by: Group 6 <br>
+        2018
+    </footer>
+</body>
